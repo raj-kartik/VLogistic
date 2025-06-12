@@ -36,10 +36,24 @@ const Dashbboard = () => {
     }, []);
 
     const fetchTruck = async () => {
+
+        // console.log("---- location ----", {
+        //     // vehicleNo: vehicle,
+        //     shipmentNo: vehicle,
+        //     location: {
+        //         coords: {
+        //             latitude: location?.lat,
+        //             longitude: location?.long,
+        //         }
+        //     }
+        // });
+
+        // return;
+
         try {
             const response = await axios.put('https://vpl-app-1.onrender.com/api/track', {
                 // vehicleNo: vehicle,
-                shipmentNo: vehicle,
+                vehicleNo: vehicle,
                 location: {
                     coords: {
                         latitude: location?.lat,
@@ -61,16 +75,14 @@ const Dashbboard = () => {
     }
 
     useEffect(() => {
-        if (vehicle.length >= 3) {
-            const interval = setInterval(() => {
-                fetchTruck();
-            }, 10000); // every 10 seconds
+    if (vehicle.length >= 3) {
+        const interval = setInterval(() => {
+            fetchTruck();
+        }, 10000); // every 10 seconds
 
-            // Cleanup interval on unmount
-            return () => clearInterval(interval);
-        }
-        // fetchTruck();
-    }, [vehicle]);
+        return () => clearInterval(interval); // Cleanup
+    }
+}, [vehicle]);
 
 
     console.log("---- data of the access ----", data);
@@ -92,6 +104,13 @@ const Dashbboard = () => {
                     />
                 </View>
 
+                <TouchableOpacity style={styles.button} onPress={() => {
+                    fetchTruck()
+                }
+                } >
+                    <Text style={{ color: "#fff", fontWeight: "500", fontSize: 16 }} >Track Shipment</Text>
+                </TouchableOpacity>
+
                 {
                     data && (
                         <View style={{ width: "100%", alignSelf: "center", height: 150, backgroundColor: "#f7f7f7", padding: 10, borderRadius: 10, marginTop: 20 }} >
@@ -103,10 +122,12 @@ const Dashbboard = () => {
                                 <Text style={{ fontWeight: "500" }} >Latitude: {data?.latitude || ""}</Text>
                             </View>
 
-                            <Pressable style={{position:"absolute", top:10, right:10}} onPress={()=>{
+                            <Pressable style={{ position: "absolute", top: 10, right: 10 }} onPress={() => {
                                 setData(null);
+                                setVehicle('')
+                                setOnSuccess(false);
                             }} >
-                                <Text style={{color:"red",fontWeight:"500"}} >Delete</Text>
+                                <Text style={{ color: "red", fontWeight: "500" }} >Delete</Text>
                             </Pressable>
                         </View>
                     )
@@ -141,13 +162,14 @@ const styles = StyleSheet.create({
         elevation: 5
     },
     button: {
-        width: "95%",
+        width: "100%",
         alignSelf: "center",
         padding: 15,
         borderRadius: 10,
         backgroundColor: "#000",
         marginBottom: 10,
         justifyContent: "center",
-        alignItems: "center"
+        alignItems: "center",
+        marginTop: 10
     }
 })
